@@ -1,0 +1,47 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.5.32"
+}
+
+group "net.kiberion"
+version "1.0.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "com.github.kagkarlsson:db-scheduler:10.5"
+    implementation "org.jobrunr:jobrunr:4.0.5"
+
+    // tests
+    testImplementation "io.ktor:ktor-server-test-host:$ktor_version"
+    testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:$junit_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+    testImplementation "io.strikt:strikt-jvm:0.33.0"
+    testImplementation "com.zaxxer:HikariCP:5.0.0"
+    testImplementation "com.h2database:h2:1.4.200"
+    testImplementation "org.awaitility:awaitility:4.1.1"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
