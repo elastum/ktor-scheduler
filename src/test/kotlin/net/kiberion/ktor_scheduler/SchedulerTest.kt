@@ -5,6 +5,7 @@ import io.ktor.application.install
 import io.ktor.server.testing.withTestApplication
 import net.kiberion.ktor_scheduler.utils.initH2Database
 import org.awaitility.Awaitility.await
+import org.jobrunr.scheduling.cron.Cron
 import org.jobrunr.storage.sql.h2.H2StorageProvider
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -40,7 +41,7 @@ class SchedulerTest {
             testModule()
             atomicCounter.set(0)
             schedule {
-                recurringJob("incCounter", "* * * * *") {
+                recurringJob("incCounter", Cron.minutely()) {
                     jobPayload(1)
                 }
             }
