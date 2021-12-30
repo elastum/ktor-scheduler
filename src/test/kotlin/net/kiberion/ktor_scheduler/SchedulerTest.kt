@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 private fun Application.testModule() {
     install(Scheduler) {
@@ -18,31 +19,75 @@ private fun Application.testModule() {
     }
 }
 
-var counter = 0
+var atomicCounter = AtomicInteger()
 
 class SchedulerTest {
 
-    private fun jobPayload() {
-        if (counter > 0) {
+    private fun jobPayload(addedValue: Int) {
+        val oldValue = atomicCounter.getAndAdd(addedValue)
+        if (oldValue > 0) {
             throw IllegalStateException("Exceeded amount of increments")
         }
-        counter = 1
+    }
+
+    private fun taskPayload(addedValue: Int) {
+        atomicCounter.getAndAdd(addedValue)
     }
 
     @Test
     fun `should execute recurring job`(): Unit =
         withTestApplication({
             testModule()
-            counter = 0
-            recurringJob {
-                schedule("* * * * *") {
-                    jobPayload()
+            atomicCounter.set(0)
+            schedule {
+                recurringJob("incCounter", "* * * * *") {
+                    jobPayload(1)
                 }
             }
         }) {
-            expectThat(counter).isEqualTo(0)
+            expectThat(atomicCounter.get()).isEqualTo(0)
             await().atMost(90, TimeUnit.SECONDS).until {
-                counter == 1
+                atomicCounter.get() == 1
+            }
+        }
+
+    @Test
+    fun `should override existing recurring job when id match`(): Unit =
+        withTestApplication({
+            testModule()
+            atomicCounter.set(0)
+            schedule {
+                recurringJob("incCounter", "* * * * *") {
+                    jobPayload(1)
+                }
+            }
+            schedule {
+                recurringJob("incCounter", "* * * * *") {
+                    jobPayload(2)
+                }
+            }
+        }) {
+            expectThat(atomicCounter.get()).isEqualTo(0)
+            await().atMost(90, TimeUnit.SECONDS).until {
+                atomicCounter.get() == 2
+            }
+        }
+
+    @Test
+    fun `should enqueue multiple tasks`(): Unit =
+        withTestApplication({
+            testModule()
+            atomicCounter.set(0)
+        }) {
+            val scheduler: Scheduler = this.application.attributes[Scheduler.SchedulerKey]
+
+            scheduler.scheduleEnqueuedTask { taskPayload(1) }
+            scheduler.scheduleEnqueuedTask { taskPayload(3) }
+            scheduler.scheduleEnqueuedTask { taskPayload(10) }
+
+            expectThat(atomicCounter.get()).isEqualTo(0)
+            await().atMost(90, TimeUnit.SECONDS).until {
+                atomicCounter.get() == 14
             }
         }
 }
