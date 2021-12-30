@@ -1,7 +1,8 @@
 package net.kiberion.ktor_scheduler
 
-import io.ktor.application.*
-import io.ktor.server.testing.*
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.server.testing.withTestApplication
 import net.kiberion.ktor_scheduler.utils.initH2Database
 import org.awaitility.Awaitility.await
 import org.jobrunr.storage.sql.h2.H2StorageProvider
@@ -38,7 +39,6 @@ class SchedulerTest {
                     jobPayload()
                 }
             }
-
         }) {
             expectThat(counter).isEqualTo(0)
             await().atMost(90, TimeUnit.SECONDS).until {

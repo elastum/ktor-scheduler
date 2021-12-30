@@ -1,12 +1,12 @@
 package net.kiberion.ktor_scheduler
 
-import io.ktor.application.*
-import io.ktor.util.*
+import io.ktor.application.Application
+import io.ktor.application.ApplicationFeature
+import io.ktor.application.ApplicationStopped
+import io.ktor.util.AttributeKey
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrConfiguration
 import org.jobrunr.jobs.lambdas.JobLambda
-import org.jobrunr.storage.StorageProviderUtils
-import org.jobrunr.storage.sql.common.DefaultSqlStorageProvider
 
 class Scheduler(
     val configuration: SchedulerConfiguration,

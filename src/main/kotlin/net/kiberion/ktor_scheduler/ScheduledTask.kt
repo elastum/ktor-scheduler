@@ -1,7 +1,8 @@
 package net.kiberion.ktor_scheduler
 
-import io.ktor.application.*
-import io.ktor.util.pipeline.*
+import io.ktor.application.Application
+import io.ktor.application.feature
+import io.ktor.util.pipeline.ContextDsl
 import org.jobrunr.jobs.lambdas.JobLambda
 
 @ContextDsl
