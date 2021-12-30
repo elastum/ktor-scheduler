@@ -10,7 +10,7 @@ fun Application.recurringJob(configuration: Scheduler.() -> Unit): Scheduler =
     feature(Scheduler).apply(configuration)
 
 @ContextDsl
-inline fun Scheduler.schedule(
+fun Scheduler.schedule(
     cron: String,
     job: JobLambda,
 ): String {
