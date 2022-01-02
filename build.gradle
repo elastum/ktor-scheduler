@@ -1,5 +1,6 @@
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.5.32"
+    id 'java-library'
 }
 
 group "net.kiberion"
