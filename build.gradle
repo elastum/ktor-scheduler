@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-group "net.kiberion"
+group "net.kiberion.ktor-scheduler"
 version "1.0.0"
 
 repositories {
