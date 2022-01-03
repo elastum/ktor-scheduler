@@ -10,13 +10,14 @@ import org.jobrunr.storage.sql.h2.H2StorageProvider
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import strikt.assertions.isLessThan
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 private fun Application.testModule() {
     install(Scheduler) {
         storageProvider = H2StorageProvider(initH2Database())
-        threads = 5
+        threads = 3
     }
 }
 
@@ -29,6 +30,10 @@ class SchedulerTest {
         if (oldValue > 0) {
             throw IllegalStateException("Exceeded amount of increments")
         }
+    }
+
+    private fun jobPayloadInfinite(addedValue: Int) {
+        atomicCounter.getAndAdd(addedValue)
     }
 
     private fun taskPayload(addedValue: Int) {
@@ -90,5 +95,23 @@ class SchedulerTest {
             await().atMost(90, TimeUnit.SECONDS).until {
                 atomicCounter.get() == 14
             }
+        }
+
+    @Test
+    fun `should stop execution after application shutdown`(): Unit =
+        withTestApplication({
+            testModule()
+            atomicCounter.set(0)
+            schedule {
+                recurringJob("incCounter", Cron.minutely()) {
+                    jobPayloadInfinite(1)
+                }
+            }
+        }) {
+            this.application.dispose()
+            val oldValue = atomicCounter.get()
+            expectThat(oldValue).isLessThan(2)
+            TimeUnit.SECONDS.sleep(70)
+            expectThat(atomicCounter.get()).isEqualTo(oldValue)
         }
 }

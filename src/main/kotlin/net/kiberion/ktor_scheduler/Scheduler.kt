@@ -7,12 +7,13 @@ import io.ktor.util.AttributeKey
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrConfiguration
 import org.jobrunr.jobs.lambdas.JobLambda
+import java.io.Closeable
 import java.util.*
 
 class Scheduler(
     val configuration: SchedulerConfiguration,
     val scheduler: JobRunrConfiguration.JobRunrConfigurationResult
-) {
+) : Closeable {
 
     /**
      * Schedule a job that will be repeated on specified time
@@ -65,5 +66,10 @@ class Scheduler(
 
             return scheduler
         }
+    }
+
+    override fun close() {
+        scheduler.jobScheduler.shutdown()
+        scheduler.jobRequestScheduler.shutdown()
     }
 }
