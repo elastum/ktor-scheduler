@@ -13,7 +13,7 @@ import java.util.*
 class Scheduler(
     val configuration: SchedulerConfiguration,
     val scheduler: JobRunrConfiguration.JobRunrConfigurationResult
-): Closeable {
+) : Closeable {
 
     /**
      * Schedule a job that will be repeated on specified time

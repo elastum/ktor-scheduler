@@ -111,7 +111,7 @@ class SchedulerTest {
             this.application.dispose()
             val oldValue = atomicCounter.get()
             expectThat(oldValue).isLessThan(2)
-            TimeUnit.SECONDS.sleep(70);
+            TimeUnit.SECONDS.sleep(70)
             expectThat(atomicCounter.get()).isEqualTo(oldValue)
         }
 }
