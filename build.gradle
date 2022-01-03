@@ -4,8 +4,17 @@ plugins {
     id 'maven-publish'
 }
 
-group "net.kiberion.ktor-scheduler"
-version "1.0.2"
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "com.github.kibertoad"
+            artifactId = "ktor-scheduler"
+            version = "1.0.2"
+
+            from(components["java"])
+        }
+    }
+}
 
 repositories {
     mavenCentral()
