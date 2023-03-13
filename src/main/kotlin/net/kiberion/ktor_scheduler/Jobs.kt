@@ -1,16 +1,15 @@
 package net.kiberion.ktor_scheduler
 
-import io.ktor.application.Application
-import io.ktor.application.feature
-import io.ktor.util.pipeline.ContextDsl
+import io.ktor.server.application.*
+import io.ktor.util.*
 import org.jobrunr.jobs.lambdas.JobLambda
 import java.util.*
 
-@ContextDsl
+@KtorDsl
 fun Application.schedule(configuration: Scheduler.() -> Unit): Scheduler =
-    feature(Scheduler).apply(configuration)
+    plugin(Scheduler).apply(configuration)
 
-@ContextDsl
+@KtorDsl
 fun Scheduler.recurringJob(
     id: String,
     cron: String,
@@ -19,7 +18,7 @@ fun Scheduler.recurringJob(
     return scheduleRecurringJob(id, cron, job)
 }
 
-@ContextDsl
+@KtorDsl
 fun Scheduler.enqueuedTask(
     job: JobLambda,
 ): UUID {
