@@ -1,9 +1,7 @@
 package net.kiberion.ktor_scheduler
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.ApplicationStopped
-import io.ktor.util.AttributeKey
+import io.ktor.server.application.*
+import io.ktor.util.*
 import org.jobrunr.configuration.JobRunr
 import org.jobrunr.configuration.JobRunrConfiguration
 import org.jobrunr.jobs.lambdas.JobLambda
@@ -36,7 +34,7 @@ class Scheduler(
         return scheduler.jobScheduler.enqueue(job).asUUID()
     }
 
-    companion object Feature : ApplicationFeature<Application, SchedulerConfiguration, Scheduler> {
+    companion object Plugin : BaseApplicationPlugin<Application, SchedulerConfiguration, Scheduler> {
 
         val SchedulerKey = AttributeKey<Scheduler>("Scheduler")
 
